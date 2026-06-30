@@ -1,6 +1,6 @@
 ---
 name: geo-content-forge
-version: 1.0.0
+version: 1.1.0
 license: MIT
 homepage: https://github.com/chen0xiiiix/geo-content-forge
 compatibility: Claude Code, Codex CLI, Cursor, Windsurf, Gemini CLI, and other SKILL.md-compatible agents
@@ -551,3 +551,128 @@ Only touch wording when the user explicitly asks for a language pass, or when it
 is an actual error. Preserve the owner's voice, structure, and wording. The win
 comes from schema and correctness, not from a rewrite. When in doubt, don't
 change it.
+
+## Snapshot table must list ALL heading levels (H2-H6)
+
+The Stage 1 snapshot table is the one-glance overview, so it MUST include the
+count of every heading level, not just H1. Add rows for H2, H3, H4, H5, H6 with
+their counts (e.g. "H2: 4", "H3: 4", "H4: 4", "H5: none", "H6: none"), read from
+the raw HTML. The detailed heading tree still goes below the table, but the
+counts belong IN the snapshot so the reader sees the full structure at a glance.
+Never leave H2-H6 out of the snapshot just because the tree is shown separately.
+
+## Competitors must be a TABLE, not prose
+
+Whenever competitor coverage is reported (Stage 1 or Stage 2), present it as a
+TABLE, never as a sentence listing names. Even in minimal-intervention runs, if
+competitors are mentioned at all, they go in a table. Required columns:
+
+| Competitor | Keywords/phrases used | Questions answered | Topics covered | Visible gap |
+
+List each REAL competitor found on one row, with what they actually cover
+(Measured from their live page). Do not collapse them into a prose line like
+"Enterprise, SIXT and GO Rentals all answer X". The table makes the content gap
+concrete and scannable. Only the exact ranking/volume/difficulty numbers stay
+N/A without a paid tool; the content-level coverage above is always table form.
+
+## FAQPage schema: Google rich results ended May 2026 (accuracy update)
+
+IMPORTANT factual correction. Do NOT sell FAQPage schema as a "Google rich
+result" win, that feature is gone:
+- On 2026-05-07 Google stopped showing FAQ rich results in Search, for ALL site
+  types (including the government/health sites that were the last exception).
+  The Search Console FAQ report and Rich Results Test support end June 2026; the
+  Search Console API support ends August 2026.
+- FAQPage is STILL a valid Schema.org type. The markup stays valid, won't cause
+  errors, and other engines (Bing, etc.) and AI crawlers still parse it. Google
+  also still parses it to understand the page. What ended is the visible SERP
+  dropdown feature only.
+
+How to describe FAQPage honestly now (no overclaiming):
+- Do NOT say "adds FAQ rich results" or "expands your Google listing", false now.
+- Do NOT overclaim the opposite either: FAQPage is NOT a documented Google AI
+  Overviews ranking/citation signal. Don't sell it as an "AI citation lever".
+- The honest framing: FAQPage is cheap, low-risk structured data that keeps the
+  page's real Q&A machine-readable for engines and AI crawlers. The load-bearing
+  work is the visible, answer-first Q&A content itself, not the markup.
+- Only add FAQPage where the page genuinely has real, visible Q&A that users ask.
+  Never add it to non-Q&A pages just to chase a feature that no longer exists.
+
+So: still worth adding to a real FAQ page (cheap insurance, machine clarity), but
+frame it as "keeps your real Q&A machine-readable", not as a Google rich-result
+or guaranteed-AI-citation win. The visible answer-first content is the real lever.
+
+## Keyword context BEFORE rewriting (v1: don't edit blind)
+
+Problem this solves: editing a page without a keyword reference means you can't
+tell whether the page covers the terms it should, misses obvious ones, or steps
+on terms another page should own. Before judging/rewriting a page's content,
+establish a keyword CONTEXT for it first. This is the v1, single-page version of
+keyword mapping (full site-wide keyword universe + page mapping is a v2 feature,
+see ROADMAP, it needs site-level crawl + Ahrefs data).
+
+Run this as a step between page-type detection and the rewrite:
+
+1. ASK or BUILD the page's intended keyword set:
+   - Preferred: ask the user "what terms/questions should THIS page own?" (they
+     know their strategy and their other pages). Their answer is the reference.
+   - If they can't say: build a qualitative set from free signals only,
+     autocomplete, People Also Ask, and the actual competitor pages for this
+     intent. List the real terms and questions that exist for this topic.
+   - With Ahrefs/Semrush data (BYOK): use their real terms + volume/difficulty.
+     Without it, the set is qualitative, label volume/difficulty N/A. Never
+     invent search numbers.
+
+2. CHECK the page against that set:
+   - Covered: which intended terms/questions the page already addresses.
+   - Missing: in-demand terms/questions the page should cover but doesn't (only
+     ones with real evidence, never invented).
+   - Off-topic / overlap risk: terms the page targets that likely belong to a
+     DIFFERENT page (e.g. an About page trying to rank for "cheap car rental
+     auckland" that a location page should own). Flag as SUSPECTED cannibalization,
+     not confirmed, single-page view can't see the whole site. Confirming needs
+     the v2 site crawl.
+
+3. USE this context in the rewrite:
+   - Fill real, evidenced gaps that fit the page type (don't force a location
+     page's transactional terms onto an About page).
+   - Don't strip terms the page legitimately owns.
+   - Respect the minimal-intervention rule, this context guides which true gaps
+     to fill, it is NOT a license to rewrite working copy.
+
+Honesty boundaries: the keyword set is a single-page reference, not a full site
+map. Cannibalization is "suspected" until a site crawl confirms it. Volume and
+difficulty stay N/A without a paid tool. Report the keyword context explicitly
+(covered / missing / overlap-risk) so the user sees the reference you edited
+against, instead of a blind edit.
+
+## Final heading tree: TOTAL the result after changes (not just the original)
+
+Gap this fixes: the audit MEASURES the original heading tree (H1-H6 as found),
+and the change report lists individual heading edits, but neither shows the
+FINAL heading structure after all changes are applied. The reader is left to
+mentally merge "original" + "edits" themselves. Don't make them do that.
+
+After the change report, output a FINAL HEADING TREE that totals the result:
+- Take the measured original tree, apply every disposition (KEEP / new ADD /
+  REWRITE / REMOVE), and render the complete resulting H1-H6 tree as it will be
+  AFTER the changes ship.
+- Tag each line so the change is visible at a glance:
+    [kept]      unchanged heading
+    [new]       heading added this round
+    [rewritten] heading whose text/level changed
+    [removed]   show it struck/listed as removed (or omit and note it below)
+- This is the "total" view: original, minus removals, plus additions, with
+  rewrites reflected, in document order.
+
+Rules:
+- The final tree must be CONSISTENT with the change report and the audit, same
+  facts, no new headings that weren't in the dispositions.
+- If heading levels were left as-is under minimal-intervention (e.g. an H1->H3
+  skip you only flagged, didn't fix), the final tree shows them UNCHANGED and
+  notes "flagged, not changed", don't silently "fix" it in the final tree.
+- Keep it grounded: every line traces to either the original page or a stated
+  change. Never invent structure to make the tree look tidier.
+
+Purpose: the user sees the actual resulting page structure in one place, instead
+of reconstructing it from the original tree plus a list of edits.
